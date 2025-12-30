@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -14,7 +15,7 @@ class WebhookValidationTest extends TestCase
         Storage::disk('local')->put('received_events.json', json_encode([], JSON_PRETTY_PRINT));
     }
 
-    /** @test */
+    #[Test]
     public function it_accepts_webhook_with_valid_signature()
     {
         $payload = json_encode([
@@ -49,7 +50,7 @@ class WebhookValidationTest extends TestCase
         $this->assertContains('evt_test_123', $received);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_webhook_with_invalid_signature()
     {
         $payload = json_encode([
@@ -66,7 +67,7 @@ class WebhookValidationTest extends TestCase
             ->assertJson(['error' => 'Invalid signature']);
     }
 
-    /** @test */
+    #[Test]
     public function it_is_idempotent_for_duplicate_events()
     {
         $eventId = 'evt_duplicate_001';
