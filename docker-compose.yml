@@ -1,0 +1,83 @@
+services:
+  app:
+    build:
+      args:
+        user: sammy
+        uid: 1000
+      context: .
+      dockerfile: Dockerfile
+    image: giftflow
+    container_name: giftflow-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    networks:
+      - giftflow-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: giftflow-nginx
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    networks:
+      - giftflow-network
+    depends_on:
+      - app
+
+  db:
+    image: mysql:8.0
+    container_name: giftflow-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-giftflow}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-root}
+      MYSQL_USER: ${DB_USERNAME:-giftflow}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - giftflow-network
+    ports:
+      - "33061:3306"
+
+  redis:
+    image: redis:alpine
+    container_name: giftflow-redis
+    restart: unless-stopped
+    networks:
+      - giftflow-network
+    ports:
+      - "63791:6379"
+
+  queue:
+    build:
+      args:
+        user: sammy
+        uid: 1000
+      context: .
+      dockerfile: Dockerfile
+    container_name: giftflow-queue
+    restart: unless-stopped
+    command: php artisan queue:work
+    volumes:
+      - ./:/var/www
+    depends_on:
+      - app
+      - redis
+      - db
+    networks:
+      - giftflow-network
+
+networks:
+  giftflow-network:
+    driver: bridge
+
+volumes:
+  dbdata:
