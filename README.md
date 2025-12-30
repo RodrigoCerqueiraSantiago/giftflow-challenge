@@ -111,4 +111,19 @@ Lá você pode:
 - Alterar o e-mail para validar regras de concorrência.
 
 ---
-Desenvolvido como parte do Teste Técnico.
+---
+
+## ✅ Checklist de Entregas (Requisitos do Teste)
+
+| Requisito | Status | Implementação |
+| :--- | :---: | :--- |
+| **Seed Codes** | ✅ | Comando `giftflow:seed` cria códigos iniciais. |
+| **Redeem API** | ✅ | `POST /api/redeem` (Validação, Sucesso, Erro 404/409). |
+| **Webhook Dispatcher** | ✅ | Job Assíncrono (`DispatchWebhookJob`) via Redis. |
+| **Idempotency** | ✅ | Tratamento de concorrência e respostas cacheadas para mesmo usuário. |
+| **Webhook Signing** | ✅ | Assinatura HMAC SHA256 (`X-GiftFlow-Signature`). |
+| **Docker** | ✅ | Setup completo com Nginx, PHP-FPM, MySQL e Redis. |
+| **Testes** | ✅ | Cobertura de Feature para Fluxo de Resgate, Webhook e Segurança. |
+
+---
+Desenvolvido por Rodrigo Santiago como parte do Teste Técnico.
